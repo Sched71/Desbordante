@@ -1,8 +1,6 @@
 #pragma once
 
 #include <string>
-
-#include <boost/dynamic_bitset.hpp>
 #include <utility>
 
 #include "RelationalSchema.h"

@@ -2,7 +2,8 @@ set(BINARY ${CMAKE_PROJECT_NAME})
 
 file(GLOB_RECURSE lib_sources "*/*.h*" "*/*.cpp*" "*/*.cc*")
 
-add_library(${BINARY}_lib STATIC ${lib_sources})
+add_library(${BINARY}_lib SHARED ${lib_sources})
+target_link_libraries(${BINARY}_lib PUBLIC easyloggingpp ${Boost_LIBRARIES} Threads::Threads)
 
 option(SAFE_VERTICAL_HASHING
         "Enable safe vertical hashing. This feature allows to process\
@@ -18,5 +19,4 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 add_executable(${BINARY}_run ${run_sources})
 target_link_libraries(${BINARY}_run PUBLIC ${CMAKE_PROJECT_NAME}_lib)
-target_link_libraries(${BINARY}_run LINK_PUBLIC ${Boost_LIBRARIES} Threads::Threads easyloggingpp)
 

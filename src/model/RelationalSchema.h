@@ -6,7 +6,6 @@
 #pragma once
 
 #include <functional>
-#include <list>
 #include <memory>
 #include <string>
 #include <vector>

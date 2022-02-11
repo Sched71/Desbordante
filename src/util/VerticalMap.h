@@ -2,7 +2,6 @@
 #include <functional>
 #include <memory>
 #include <shared_mutex>
-#include <set>
 #include <unordered_set>
 #include <unordered_map>
 #include <vector>
