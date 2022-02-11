@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/dynamic_bitset.hpp> // TODO: ну это тоже надо как-то исключить
+
 #include "RelationalSchema.h"
 #include "Vertical.h"
 

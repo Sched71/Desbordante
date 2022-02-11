@@ -1,6 +1,8 @@
 #include <memory>
 #include <utility>
 
+#include <boost/dynamic_bitset.hpp>
+
 #include "RelationalSchema.h"
 #include "Vertical.h"
 #include "VerticalMap.h"
@@ -19,13 +21,13 @@ void RelationalSchema::Init() {
 
 //TODO: В оригинале тут что-то непонятное + приходится пересоздавать empty_vertical_ -- тут
 //должен быть unique_ptr, тк создаём в остальных случаях новую вершину и выдаём наружу с овнершипом
-Vertical RelationalSchema::GetVertical(boost::dynamic_bitset<> indices) const {
+Vertical RelationalSchema::GetVertical(boost::dynamic_bitset<> const& indices) const {
     if (indices.empty()) return *Vertical::EmptyVertical(this);
 
     if (indices.count() == 1) {
-        return Vertical(this, std::move(indices));
+        return Vertical(this, indices);
     }
-    return Vertical(this, std::move(indices));
+    return Vertical(this, indices);
 }
 
 Column const* RelationalSchema::GetColumn(const std::string& col_name) const {

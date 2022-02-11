@@ -1,5 +1,6 @@
 #include <algorithm>
 
+#include <boost/dynamic_bitset.hpp>
 #include <easylogging++.h>
 
 #include "ColumnCombination.h"
@@ -63,7 +64,7 @@ void LatticeLevel::GenerateNextLevel(std::vector<std::unique_ptr<LatticeLevel>>&
             std::unique_ptr<LatticeVertex> child_vertex =
                 std::make_unique<LatticeVertex>(child_columns);
 
-            dynamic_bitset<> parent_indices(vertex1->GetVertical().GetSchema()->GetNumColumns());
+            boost::dynamic_bitset<> parent_indices(vertex1->GetVertical().GetSchema()->GetNumColumns());
             parent_indices |= vertex1->GetVertical().GetColumnIndices();
             parent_indices |= vertex2->GetVertical().GetColumnIndices();
 

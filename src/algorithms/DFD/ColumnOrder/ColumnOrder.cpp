@@ -1,5 +1,9 @@
 #include "ColumnOrder.h"
 
+#include <set>
+
+#include <boost/dynamic_bitset.hpp>
+
 #include "OrderedPartition.h"
 #include "ColumnLayoutRelationData.h"
 #include "RelationalSchema.h"

@@ -116,7 +116,7 @@ void Depminer::LhsForColumn(std::unique_ptr<Column> const& column,
     bool column_contains_only_equal_values =
         pli->GetNumNonSingletonCluster() == 1 && pli->GetSize() == relation_->GetNumRows();
     if (column_contains_only_equal_values) {
-        RegisterFd(Vertical(), *column);
+        RegisterFd(Vertical(schema_), *column);
         return;
     }
 

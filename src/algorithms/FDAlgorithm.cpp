@@ -1,5 +1,9 @@
 #include "FDAlgorithm.h"
 
+//#include <boost/dynamic_bitset.hpp>
+
+#include <map>
+
 unsigned long long FDAlgorithm::Execute() {
     Initialize();
 

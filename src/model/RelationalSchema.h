@@ -11,7 +11,7 @@
 #include <vector>
 #include <unordered_set>
 
-#include <boost/dynamic_bitset.hpp>
+#include <boost/dynamic_bitset_fwd.hpp>
 #include <boost/optional.hpp>
 
 class Column;
@@ -34,7 +34,7 @@ public:
     Column const* GetColumn(const std::string& col_name) const;
     Column const* GetColumn(int index) const;
     size_t GetNumColumns() const;
-    Vertical GetVertical(boost::dynamic_bitset<> indices) const;
+    Vertical GetVertical(boost::dynamic_bitset<> const& indices) const;
     bool IsNullEqualNull() const;
 
     void AppendColumn(const std::string& col_name);

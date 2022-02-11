@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <boost/dynamic_bitset.hpp>
+#include <boost/dynamic_bitset_fwd.hpp>
 
 #include "custom/CustomHashes.h"
 #include "ProfilingContext.h"
@@ -138,11 +138,11 @@ public:
     /* methods to shrink the map by deleting removable entries
      * !!! Untested yet - use carefully
      * */
-    virtual void Shrink(double factor, std::function<bool(Entry, Entry)> const& compare,
-                        std::function<bool(Entry)> const& can_remove,
-                        ProfilingContext::ObjectToCache cache_object);
-    virtual void Shrink(std::unordered_map<Vertical, unsigned int>& usage_counter,
-                        std::function<bool(Entry)> const& can_remove);
+//    virtual void Shrink(double factor, std::function<bool(Entry, Entry)> const& compare,
+//                        std::function<bool(Entry)> const& can_remove,
+//                        ProfilingContext::ObjectToCache cache_object);
+//    virtual void Shrink(std::unordered_map<Vertical, unsigned int>& usage_counter,
+//                        std::function<bool(Entry)> const& can_remove);
 
     virtual long long GetShrinkInvocations() { return shrink_invocations_; }
     virtual long long GetTimeSpentOnShrinking() { return time_spent_on_shrinking_; }
@@ -197,11 +197,11 @@ public:
     virtual bool RemoveSupersetEntries(Vertical const& key) override;
     virtual bool RemoveSubsetEntries(Vertical const& key) override;
 
-    virtual void Shrink(double factor, std::function<bool(Entry, Entry)> const& compare,
-                        std::function<bool(Entry)> const& can_remove,
-                        ProfilingContext::ObjectToCache cache_object) override;
-    virtual void Shrink(std::unordered_map<Vertical, unsigned int>& usage_counter,
-                        std::function<bool(Entry)> const& can_remove) override;
+//    virtual void Shrink(double factor, std::function<bool(Entry, Entry)> const& compare,
+//                        std::function<bool(Entry)> const& can_remove,
+//                        ProfilingContext::ObjectToCache cache_object) override;
+//    virtual void Shrink(std::unordered_map<Vertical, unsigned int>& usage_counter,
+//                        std::function<bool(Entry)> const& can_remove) override;
 
     virtual long long GetShrinkInvocations() override;
     virtual long long GetTimeSpentOnShrinking() override;

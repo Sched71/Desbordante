@@ -10,8 +10,9 @@
 #include <string>
 #include <vector>
 
-#include <boost/dynamic_bitset.hpp>
+#include <boost/dynamic_bitset_fwd.hpp>
 
+#include "BitSetFwd.h"
 #include "Column.h"
 
 class Vertical {
@@ -19,7 +20,7 @@ private:
     //Vertical(shared_ptr<RelationalSchema>& relSchema, int indices);
 
     //TODO: unique_ptr<column_indices_> if this is big
-    boost::dynamic_bitset<> column_indices_;
+    std::unique_ptr<boost::dynamic_bitset<>> column_indices_;
     RelationalSchema const* schema_;
 
 public:
@@ -27,16 +28,16 @@ public:
     static std::unique_ptr<Vertical> EmptyVertical(RelationalSchema const* rel_schema);
 
     Vertical(RelationalSchema const* rel_schema, boost::dynamic_bitset<> indices);
-    Vertical() = default;
+    explicit Vertical(RelationalSchema const* rel_schema);
 
     explicit Vertical(Column const& col);
 
-    Vertical(Vertical const& other) = default;
-    Vertical& operator=(const Vertical& rhs) = default;
-    Vertical(Vertical&& other) = default;
-    Vertical& operator=(Vertical&& rhs) = default;
+    Vertical(Vertical const& other);
+    Vertical& operator=(const Vertical& rhs);
+    Vertical(Vertical&& other) noexcept;
+    Vertical& operator=(Vertical&& rhs) noexcept;
 
-    virtual ~Vertical() = default;
+    virtual ~Vertical();
 
     /* @return Returns true if lhs.column_indices_ lexicographically less than
      * rhs.column_indices_ treating bitsets big endian.
@@ -53,8 +54,8 @@ public:
     }
     bool operator>(Vertical const& rhs) const { return !(*this < rhs && *this == rhs); }
 
-    boost::dynamic_bitset<> GetColumnIndices() const { return column_indices_; }
-    boost::dynamic_bitset<> const& GetColumnIndicesRef() const { return column_indices_; }
+    boost::dynamic_bitset<> GetColumnIndices() const;
+    boost::dynamic_bitset<> const& GetColumnIndicesRef() const { return *column_indices_; }
     RelationalSchema const* GetSchema() const { return schema_; }
 
     bool Contains(Vertical const& that) const;
@@ -68,7 +69,7 @@ public:
     Vertical Invert() const;
     Vertical Invert(Vertical const& scope) const;
 
-    unsigned int GetArity() const { return column_indices_.count(); }
+    unsigned int GetArity() const;
     std::vector<Column const*> GetColumns() const;
     std::vector<Vertical> GetParents() const;
 

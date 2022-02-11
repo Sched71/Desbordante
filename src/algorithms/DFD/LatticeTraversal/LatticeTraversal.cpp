@@ -43,7 +43,7 @@ std::unordered_set<Vertical> LatticeTraversal::FindLHSs() {
 
     do {
         while (!seeds.empty()) {
-            Vertical node;
+            Vertical node(schema);
             if (!seeds.empty()) {
                 node = std::move(seeds.top());
                 seeds.pop();

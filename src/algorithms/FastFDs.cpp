@@ -6,7 +6,6 @@
 
 #include <boost/asio/post.hpp>
 #include <boost/asio/thread_pool.hpp>
-#include <boost/dynamic_bitset.hpp>
 #include <boost/thread.hpp>
 #include <easylogging++.h>
 
@@ -60,7 +59,7 @@ unsigned long long FastFDs::ExecuteInternal() {
         if (ColumnContainsOnlyEqualValues(*column)) {
             LOG(DEBUG) << "Registered FD: " << schema_->empty_vertical_->ToString()
                       << "->" << column->ToString();
-            RegisterFd(Vertical(), *column);
+            RegisterFd(Vertical(schema_), *column);
             return;
         }
 

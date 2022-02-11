@@ -246,21 +246,21 @@ std::vector<typename VerticalMap<Value>::Entry> VerticalMap<Value>::GetSubsetEnt
 //returns an empty pair if no entry is found
 template<class Value>
 typename VerticalMap<Value>::Entry VerticalMap<Value>::GetAnySubsetEntry(Vertical const& vertical) const {
-    typename VerticalMap<Value>::Entry entry;
+    std::optional<typename VerticalMap<Value>::Entry> entry;
     Bitset subset_key(relation_->GetNumColumns());
     set_trie_.CollectSubsetKeys(vertical.GetColumnIndices(), 0, subset_key,
                                 [&entry, this](auto& indices, auto value) {
                                     entry = {relation_->GetVertical(indices), value};
                                     return false;
                                 });
-    return entry;
+    return entry.value();
 }
 
 template <class Value>
 typename VerticalMap<Value>::Entry VerticalMap<Value>::GetAnySubsetEntry(
     const Vertical& vertical,
     std::function<bool(Vertical const*, std::shared_ptr<Value const>)> const& condition) const {
-    typename VerticalMap<Value>::Entry entry;
+    std::optional<typename VerticalMap<Value>::Entry> entry;
     Bitset subset_key(relation_->GetNumColumns());
     set_trie_.CollectSubsetKeys(vertical.GetColumnIndices(), 0, subset_key,
                                 [&entry, this, &condition](auto& indices, auto value) {
@@ -272,7 +272,7 @@ typename VerticalMap<Value>::Entry VerticalMap<Value>::GetAnySubsetEntry(
                                         return true;
                                     }
                                 });
-    return entry;
+    return entry.value();
 }
 
 template <class Value>
@@ -291,21 +291,21 @@ std::vector<typename VerticalMap<Value>::Entry> VerticalMap<Value>::GetSupersetE
 template <class Value>
 typename VerticalMap<Value>::Entry VerticalMap<Value>::GetAnySupersetEntry(
     Vertical const& vertical) const {
-    typename VerticalMap<Value>::Entry entry;
+    std::optional<typename VerticalMap<Value>::Entry> entry;
     Bitset superset_key(relation_->GetNumColumns());
     set_trie_.CollectSupersetKeys(vertical.GetColumnIndices(), 0, superset_key,
                                   [&entry, this](auto& indices, auto value) {
                                       entry = {relation_->GetVertical(indices), value};
                                       return false;
                                   });
-    return entry;
+    return entry.value();
 }
 
 template <class Value>
 typename VerticalMap<Value>::Entry VerticalMap<Value>::GetAnySupersetEntry(
     Vertical const& vertical,
     std::function<bool(Vertical const*, std::shared_ptr<Value const>)> condition) const {
-    typename VerticalMap<Value>::Entry entry;
+    std::optional<typename VerticalMap<Value>::Entry> entry;
     Bitset superset_key(relation_->GetNumColumns());
     set_trie_.CollectSupersetKeys(vertical.GetColumnIndices(), 0, superset_key,
                                   [&entry, this, &condition](auto& indices, auto value) {
@@ -317,7 +317,7 @@ typename VerticalMap<Value>::Entry VerticalMap<Value>::GetAnySupersetEntry(
                                           return true;
                                       }
                                   });
-    return entry;
+    return entry.value();
 }
 
 template <class Value>
@@ -406,82 +406,82 @@ std::shared_ptr<Value> VerticalMap<Value>::Remove(const VerticalMap::Bitset& key
     return removed_value;
 }
 
-//comparator is of Compare type - check ascending/descending issues
-template <class Value>
-void VerticalMap<Value>::Shrink(double factor, std::function<bool(Entry, Entry)> const& compare,
-                                std::function<bool(Entry)> const& can_remove,
-                                [[maybe_unused]] ProfilingContext::ObjectToCache cache_object) {
-    //some logging
-
-    std::priority_queue<Entry, std::vector<Entry>, std::function<bool(Entry, Entry)>> key_queue(
-        compare, std::vector<Entry>(size_));
-    Bitset subset_key(relation_->GetNumColumns());
-    set_trie_.TraverseEntries(subset_key, [&key_queue, this, &can_remove](auto& k, auto v) {
-        if (Entry entry(relation_->GetVertical(k), v); can_remove(entry)) {
-            key_queue.push(entry);
-        }
-    });
-    unsigned int num_of_removed = 0;
-    unsigned int target_size = size_ * factor;
-    while (!key_queue.empty() && size_ > target_size) {
-        auto key = key_queue.top().first;
-        key_queue.pop();
-
-        //insert additional logging
-
-        num_of_removed++;
-        Remove(key);
-    }
-    shrink_invocations_++;
-    time_spent_on_shrinking_ += 1;  // haven't implemented time measuring yet
-}
-
-template <class Value>
-void VerticalMap<Value>::Shrink(std::unordered_map<Vertical, unsigned int>& usage_counter,
-                                std::function<bool(Entry)> const& can_remove) {
-    //some logging
-
-    std::vector<int> usage_counters(usage_counter.size());
-    for (auto& [first, second] : usage_counter) {
-        usage_counters.push_back(second);
-    }
-    std::sort(usage_counters.begin(), usage_counters.end());
-    unsigned int median_of_usage = usage_counters.size() % 2 == 0
-                                       ? (usage_counters[usage_counters.size() / 2 + 1] +
-                                          usage_counters[usage_counters.size() / 2]) /
-                                             2
-                                       : usage_counters[usage_counters.size() / 2];
-
-    std::queue<Entry> key_queue;
-    Bitset subset_key(relation_->GetNumColumns());
-    set_trie_.TraverseEntries(
-        subset_key,
-        [&key_queue, this, &can_remove, &usage_counter, median_of_usage](auto& k, auto v) -> void {
-            if (Entry entry(relation_->GetVertical(k), v);
-                can_remove(entry) && usage_counter.at(entry.first) <= median_of_usage) {
-                key_queue.push(entry);
-            }
-        });
-    unsigned int num_of_removed = 0;
-    while (!key_queue.empty()) {
-        auto key = key_queue.front().first;
-        key_queue.pop();
-
-        //insert additional logging
-
-        num_of_removed++;
-        Remove(key);
-        RemoveFromUsageCounter(usage_counter, key);
-    }
-
-    //TODO: what do we want to accomplish here? - looks ok btw
-    for (auto& [first, second] : usage_counter) {
-        second = 0;
-    }
-
-    shrink_invocations_++;
-    time_spent_on_shrinking_ += 1;  // haven't implemented time measuring yet
-}
+////comparator is of Compare type - check ascending/descending issues
+//template <class Value>
+//void VerticalMap<Value>::Shrink(double factor, std::function<bool(Entry, Entry)> const& compare,
+//                                std::function<bool(Entry)> const& can_remove,
+//                                [[maybe_unused]] ProfilingContext::ObjectToCache cache_object) {
+//    //some logging
+//
+//    std::priority_queue<Entry, std::vector<Entry>, std::function<bool(Entry, Entry)>> key_queue(
+//        compare, std::vector<Entry>(size_));
+//    Bitset subset_key(relation_->GetNumColumns());
+//    set_trie_.TraverseEntries(subset_key, [&key_queue, this, &can_remove](auto& k, auto v) {
+//        if (Entry entry(relation_->GetVertical(k), v); can_remove(entry)) {
+//            key_queue.push(entry);
+//        }
+//    });
+//    unsigned int num_of_removed = 0;
+//    unsigned int target_size = size_ * factor;
+//    while (!key_queue.empty() && size_ > target_size) {
+//        auto key = key_queue.top().first;
+//        key_queue.pop();
+//
+//        //insert additional logging
+//
+//        num_of_removed++;
+//        Remove(key);
+//    }
+//    shrink_invocations_++;
+//    time_spent_on_shrinking_ += 1;  // haven't implemented time measuring yet
+//}
+//
+//template <class Value>
+//void VerticalMap<Value>::Shrink(std::unordered_map<Vertical, unsigned int>& usage_counter,
+//                                std::function<bool(Entry)> const& can_remove) {
+//    //some logging
+//
+//    std::vector<int> usage_counters(usage_counter.size());
+//    for (auto& [first, second] : usage_counter) {
+//        usage_counters.push_back(second);
+//    }
+//    std::sort(usage_counters.begin(), usage_counters.end());
+//    unsigned int median_of_usage = usage_counters.size() % 2 == 0
+//                                       ? (usage_counters[usage_counters.size() / 2 + 1] +
+//                                          usage_counters[usage_counters.size() / 2]) /
+//                                             2
+//                                       : usage_counters[usage_counters.size() / 2];
+//
+//    std::queue<Entry> key_queue;
+//    Bitset subset_key(relation_->GetNumColumns());
+//    set_trie_.TraverseEntries(
+//        subset_key,
+//        [&key_queue, this, &can_remove, &usage_counter, median_of_usage](auto& k, auto v) -> void {
+//            if (Entry entry(relation_->GetVertical(k), v);
+//                can_remove(entry) && usage_counter.at(entry.first) <= median_of_usage) {
+//                key_queue.push(entry);
+//            }
+//        });
+//    unsigned int num_of_removed = 0;
+//    while (!key_queue.empty()) {
+//        auto key = key_queue.front().first;
+//        key_queue.pop();
+//
+//        //insert additional logging
+//
+//        num_of_removed++;
+//        Remove(key);
+//        RemoveFromUsageCounter(usage_counter, key);
+//    }
+//
+//    //TODO: what do we want to accomplish here? - looks ok btw
+//    for (auto& [first, second] : usage_counter) {
+//        second = 0;
+//    }
+//
+//    shrink_invocations_++;
+//    time_spent_on_shrinking_ += 1;  // haven't implemented time measuring yet
+//}
 
 template <class Value>
 std::shared_ptr<Value> VerticalMap<Value>::Put(Vertical const& key, std::shared_ptr<Value> value) {
@@ -662,20 +662,20 @@ bool BlockingVerticalMap<V>::RemoveSubsetEntries(const Vertical& key) {
     return VerticalMap<V>::RemoveSubsetEntries(key);
 }
 
-template <class V>
-void BlockingVerticalMap<V>::Shrink(double factor, const std::function<bool(Entry, Entry)>& compare,
-                                    const std::function<bool(Entry)>& can_remove,
-                                    ProfilingContext::ObjectToCache cache_object) {
-    std::scoped_lock write_lock(read_write_mutex_);
-    VerticalMap<V>::Shrink(factor, compare, can_remove, cache_object);
-}
-
-template <class V>
-void BlockingVerticalMap<V>::Shrink(std::unordered_map<Vertical, unsigned int>& usage_counter,
-                                    const std::function<bool(Entry)>& can_remove) {
-    std::scoped_lock write_lock(read_write_mutex_);
-    VerticalMap<V>::Shrink(usage_counter, can_remove);
-}
+//template <class V>
+//void BlockingVerticalMap<V>::Shrink(double factor, const std::function<bool(Entry, Entry)>& compare,
+//                                    const std::function<bool(Entry)>& can_remove,
+//                                    ProfilingContext::ObjectToCache cache_object) {
+//    std::scoped_lock write_lock(read_write_mutex_);
+//    VerticalMap<V>::Shrink(factor, compare, can_remove, cache_object);
+//}
+//
+//template <class V>
+//void BlockingVerticalMap<V>::Shrink(std::unordered_map<Vertical, unsigned int>& usage_counter,
+//                                    const std::function<bool(Entry)>& can_remove) {
+//    std::scoped_lock write_lock(read_write_mutex_);
+//    VerticalMap<V>::Shrink(usage_counter, can_remove);
+//}
 
 template<class V>
 long long BlockingVerticalMap<V>::GetShrinkInvocations() {
