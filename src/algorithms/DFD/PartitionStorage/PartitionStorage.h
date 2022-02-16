@@ -1,10 +1,7 @@
 #pragma once
 
-class ProfilingContext;
-
 #include "CacheEvictionMethod.h"
 #include "CachingMethod.h"
-#include "ProfilingContext.h"
 #include "ColumnLayoutRelationData.h"
 #include "util/VerticalMap.h"
 

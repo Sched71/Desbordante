@@ -5,5 +5,5 @@ git clone https://github.com/amrayn/easyloggingpp/ --branch v9.97.0
 cd ..
 mkdir build
 cd build
-cmake .. -DCMAKE_BUILD_TYPE=RELEASE
+cmake .. -DCMAKE_BUILD_TYPE=DEBUG
 make
