@@ -37,3 +37,6 @@
 
 /* Inclusion dependency mining algorithms */
 #include "algorithms/ind/faida/faida.h"
+
+/* Order dependency mining algorithms */
+#include "algorithms/order/order.h"
