@@ -2,32 +2,41 @@
 
 #include <memory>
 #include <unordered_map>
+#include <unordered_set>
 
 #include <boost/container_hash/hash.hpp>
 
 #include "algorithms/algorithm.h"
 #include "model/column_layout_typed_relation_data.h"
-#include "util/config/tabular_data/input_table_type.h"
-#include "sorted_partitions.h"
 #include "order_enums.h"
+#include "sorted_partitions.h"
+#include "util/config/tabular_data/input_table_type.h"
 
 namespace algos::order {
 
 class Order : public Algorithm {
-private:
+public:
+    using Node = std::vector<unsigned int>;
+    using Hash = boost::hash<std::vector<unsigned int>>;
+    using AttributeList = std::vector<unsigned int>;
+    using SortedPartitions = std::unordered_map<Node, SortedPartition, Hash>;
+    using LatticeLevel = std::unordered_set<Node, Hash>;
+    using CandidateSets =
+            std::unordered_map<AttributeList, std::unordered_set<AttributeList, Hash>, Hash>;
     using TypedRelation = model::ColumnLayoutTypedRelationData;
-    using SortedPartitions = std::unordered_map<std::vector<unsigned int>, SortedPartition,
-                                                boost::hash<std::vector<unsigned int>>>;
 
+private:
     util::config::InputTable input_table_;
     std::unique_ptr<TypedRelation> typed_relation_;
     SortedPartitions sorted_partitions_;
+    CandidateSets candidate_sets_;
 
     void RegisterOptions();
     void LoadDataInternal() override;
     void ResetState() override;
     void CreateSortedPartitions();
     ValidityType CheckForSwap(SortedPartition const& l, SortedPartition const& r);
+    LatticeLevel GenerateNextLevel(LatticeLevel const& l);
     unsigned long long ExecuteInternal() final;
 
 public:
