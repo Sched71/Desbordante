@@ -23,6 +23,8 @@ public:
     using LatticeLevel = std::unordered_set<Node, Hash>;
     using CandidateSets =
             std::unordered_map<AttributeList, std::unordered_set<AttributeList, Hash>, Hash>;
+    using OrderDependencies =
+            std::unordered_map<AttributeList, std::unordered_set<AttributeList, Hash>, Hash>;
     using TypedRelation = model::ColumnLayoutTypedRelationData;
 
 private:
@@ -30,12 +32,15 @@ private:
     std::unique_ptr<TypedRelation> typed_relation_;
     SortedPartitions sorted_partitions_;
     CandidateSets candidate_sets_;
+    OrderDependencies valid_;
+    OrderDependencies merge_invalidated_;
 
     void RegisterOptions();
     void LoadDataInternal() override;
     void ResetState() override;
     void CreateSortedPartitions();
     ValidityType CheckForSwap(SortedPartition const& l, SortedPartition const& r);
+    void ComputeDependencies(LatticeLevel const& lattice_level);
     void Prune(LatticeLevel& lattice_level);
     LatticeLevel GenerateNextLevel(LatticeLevel const& l);
     unsigned long long ExecuteInternal() final;
