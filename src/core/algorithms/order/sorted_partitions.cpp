@@ -6,7 +6,7 @@
 namespace algos::order {
 
 void SortedPartition::BuildHashTable() {
-    for (size_t i = 0; i < sorted_partition.size(); ++i) {
+    for (std::size_t i = 0; i < sorted_partition.size(); ++i) {
         if (sorted_partition[i].size() == 1) {
             continue;
         }
@@ -40,7 +40,7 @@ SortedPartition SortedPartition::operator*(SortedPartition const& other) {
         }
     }
     SortedPartition res;
-    for (size_t i = 0; i < sorted_partition.size(); ++i) {
+    for (std::size_t i = 0; i < sorted_partition.size(); ++i) {
         if (sorted_partition[i].size() == 1) {
             res.sorted_partition.push_back(sorted_partition[i]);
         } else {

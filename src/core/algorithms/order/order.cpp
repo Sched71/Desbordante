@@ -3,23 +3,23 @@
 #include <algorithm>
 #include <utility>
 
+#include "config/names_and_descriptions.h"
+#include "config/tabular_data/input_table/option.h"
 #include "model/types/types.h"
-#include "util/config/names_and_descriptions.h"
-#include "util/config/tabular_data/input_table/option.h"
 
 namespace algos::order {
 
 Order::Order() : Algorithm({}) {
     RegisterOptions();
-    MakeOptionsAvailable({util::config::TableOpt.GetName()});
+    MakeOptionsAvailable({config::TableOpt.GetName()});
 }
 
 void Order::RegisterOptions() {
-    using namespace util::config::names;
-    using namespace util::config::descriptions;
-    using util::config::Option;
+    using namespace config::names;
+    using namespace config::descriptions;
+    using config::Option;
 
-    RegisterOption(util::config::TableOpt(&input_table_));
+    RegisterOption(config::TableOpt(&input_table_));
 }
 
 void Order::LoadDataInternal() {
@@ -76,9 +76,9 @@ void Order::CreateSortedPartitionsFromSingletons(AttributeList const& attr_list)
 }
 
 bool SubsetSetDifference(std::unordered_set<unsigned long>& a,
-                                                        std::unordered_set<unsigned long>& b) {
+                         std::unordered_set<unsigned long>& b) {
     auto const not_found = b.end();
-    for (auto const& element: a)
+    for (auto const& element : a)
         if (b.find(element) == not_found) {
             return false;
         } else {
@@ -96,12 +96,12 @@ ValidityType Order::CheckForSwap(SortedPartition const& l, SortedPartition const
     while (l_i < l.sorted_partition.size() && r_i < r.sorted_partition.size()) {
         if (next_l) {
             l_eq_class = l.sorted_partition[l_i];
-        }    
+        }
         if (next_r) {
             r_eq_class = r.sorted_partition[r_i];
         }
         if (l_eq_class.size() < r_eq_class.size()) {
-            if(!SubsetSetDifference(l_eq_class, r_eq_class)) {
+            if (!SubsetSetDifference(l_eq_class, r_eq_class)) {
                 return ValidityType::swap;
             } else {
                 res = ValidityType::merge;
@@ -449,7 +449,6 @@ unsigned long long Order::ExecuteInternal() {
     auto elapsed_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now() - start_time);
     return elapsed_milliseconds.count();
-    
 }
 
 }  // namespace algos::order

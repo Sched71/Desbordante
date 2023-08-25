@@ -7,10 +7,10 @@
 #include <boost/container_hash/hash.hpp>
 
 #include "algorithms/algorithm.h"
-#include "model/column_layout_typed_relation_data.h"
+#include "config/tabular_data/input_table_type.h"
+#include "model/table/column_layout_typed_relation_data.h"
 #include "order_enums.h"
 #include "sorted_partitions.h"
-#include "util/config/tabular_data/input_table_type.h"
 
 namespace algos::order {
 
@@ -28,7 +28,7 @@ public:
     using TypedRelation = model::ColumnLayoutTypedRelationData;
 
 private:
-    util::config::InputTable input_table_;
+    config::InputTable input_table_;
     std::unique_ptr<TypedRelation> typed_relation_;
     SortedPartitions sorted_partitions_;
     std::vector<AttributeList> single_attributes_;
