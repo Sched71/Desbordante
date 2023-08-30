@@ -51,6 +51,7 @@ private:
     void MergePrune();
     void Prune(LatticeLevel& lattice_level);
     LatticeLevel GenerateNextLevel(LatticeLevel const& l);
+    void PrintValidOD();
     unsigned long long ExecuteInternal() final;
 
 public:
