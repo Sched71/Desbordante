@@ -15,7 +15,7 @@ namespace tests {
 
 namespace fs = std::filesystem;
 
-using OD = algos::order::Order::OrderDependencies;
+using OD = algos::order::OrderDependencies;
 
 class OrderTest : public ::testing::Test {
 public:
