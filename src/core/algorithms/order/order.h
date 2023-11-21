@@ -55,6 +55,9 @@ private:
     unsigned long long ExecuteInternal() final;
 
 public:
+    OrderDependencies const& GetValidODs() const {
+        return valid_;
+    }
     Order();
 };
 
