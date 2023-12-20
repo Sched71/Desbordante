@@ -44,6 +44,7 @@
 #include "py_fd_algorithm.h"
 #include "py_fd_verifier.h"
 #include "py_metric_verifier.h"
+#include "py_order.h"
 #include "py_ucc_algorithm.h"
 #include "py_ucc_verifier.h"
 
@@ -253,6 +254,8 @@ PYBIND11_MODULE(desbordante, module) {
     DEFINE_ALGORITHM(ACAlgorithm, Algorithm)
             .def("get_ac_ranges", &PyACAlgorithm::GetACRanges)
             .def("get_ac_exceptions", &PyACAlgorithm::GetACExceptions);
+
+    DEFINE_ALGORITHM(Order, Algorithm).def("get_valid_ods", &PyOrder::GetValidODs);
 
     DEFINE_FD_ALGORITHM(Aid);
     DEFINE_FD_ALGORITHM(Depminer);
