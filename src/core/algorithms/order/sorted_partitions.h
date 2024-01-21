@@ -8,21 +8,34 @@
 
 namespace algos::order {
 
-struct SortedPartition {
+class SortedPartition {
+public:
     using EquivalenceClasses = std::vector<std::unordered_set<model::TupleIndex>>;
     using PartitionIndex = unsigned long;
+    using HashProduct = std::unordered_map<PartitionIndex, SortedPartition::EquivalenceClasses>;
 
+private:
     EquivalenceClasses sorted_partition;
     std::unordered_map<model::TupleIndex, PartitionIndex> hash_partition;
     unsigned long num_rows = 0;
 
+    void BuildHashTable();
+    HashProduct BuildHashProduct(SortedPartition const& other);
+
+public:
     SortedPartition() = default;
     SortedPartition(unsigned long num_rows) : num_rows(num_rows){};
     SortedPartition(EquivalenceClasses&& eq_classes, unsigned long num_rows)
         : sorted_partition(std::move(eq_classes)), num_rows(num_rows){};
-
-    void BuildHashTable();
     void Intersect(SortedPartition const& other);
+
+    EquivalenceClasses const& GetEqClasses() const {
+        return sorted_partition;
+    }
+
+    std::size_t Size() const {
+        return sorted_partition.size();
+    }
 };
 
 }  // namespace algos::order

@@ -19,9 +19,8 @@ void SortedPartition::BuildHashTable() {
     }
 }
 
-void SortedPartition::Intersect(SortedPartition const& other) {
-    BuildHashTable();
-    std::unordered_map<PartitionIndex, SortedPartition::EquivalenceClasses> hash_product;
+SortedPartition::HashProduct SortedPartition::BuildHashProduct(SortedPartition const& other) {
+    HashProduct hash_product;
     hash_product.reserve(hash_partition.size());
     for (std::unordered_set<model::TupleIndex> const& eq_class : other.sorted_partition) {
         if (other.sorted_partition.size() <= 1) {
@@ -43,6 +42,12 @@ void SortedPartition::Intersect(SortedPartition const& other) {
             hash_product[position].push_back({});
         }
     }
+    return hash_product;
+}
+
+void SortedPartition::Intersect(SortedPartition const& other) {
+    BuildHashTable();
+    HashProduct hash_product = BuildHashProduct(other);
     SortedPartition res(num_rows);
     res.sorted_partition.reserve(num_rows);
     for (std::size_t i = 0; i < sorted_partition.size(); ++i) {
