@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include <boost/unordered/unordered_flat_set.hpp>
 #include <boost/unordered/unordered_flat_map.hpp>
 
 #include <boost/unordered/unordered_flat_map.hpp>
@@ -16,7 +17,7 @@ namespace algos::order {
 
 class SortedPartition {
 public:
-    using EquivalenceClass = std::unordered_set<model::TupleIndex>;
+    using EquivalenceClass = boost::unordered_flat_set<model::TupleIndex>;
     using EquivalenceClasses = std::vector<EquivalenceClass>;
     using PartitionIndex = unsigned long;
     using HashProduct = boost::unordered_flat_map<PartitionIndex, SortedPartition::EquivalenceClasses>;
