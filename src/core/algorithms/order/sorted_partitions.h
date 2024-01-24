@@ -25,7 +25,7 @@ private:
 
 public:
     SortedPartition() = default;
-    SortedPartition(unsigned long num_rows) : num_rows(num_rows){};
+    explicit SortedPartition(unsigned long num_rows) noexcept : num_rows(num_rows){};
     SortedPartition(EquivalenceClasses&& eq_classes, unsigned long num_rows)
         : sorted_partition(std::move(eq_classes)), num_rows(num_rows){};
     void Intersect(SortedPartition const& other);
