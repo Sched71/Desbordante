@@ -12,6 +12,7 @@
 #include "model/table/column_layout_typed_relation_data.h"
 #include "order_utility.h"
 #include "sorted_partitions.h"
+#include "config/thread_number/option.h"
 
 namespace algos::order {
 
