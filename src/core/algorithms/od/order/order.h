@@ -4,8 +4,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <boost/asio/thread_pool.hpp>
-
 #include "algorithms/algorithm.h"
 #include "config/tabular_data/input_table_type.h"
 #include "config/thread_number/option.h"
