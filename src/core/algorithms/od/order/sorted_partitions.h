@@ -4,6 +4,10 @@
 #include <unordered_set>
 #include <vector>
 
+#include <boost/unordered/unordered_flat_map.hpp>
+
+#include <boost/unordered/unordered_flat_map.hpp>
+
 #include "config/thread_number/option.h"
 #include "config/thread_number/type.h"
 #include "model/table/tuple_index.h"
@@ -15,11 +19,11 @@ public:
     using EquivalenceClass = std::unordered_set<model::TupleIndex>;
     using EquivalenceClasses = std::vector<EquivalenceClass>;
     using PartitionIndex = unsigned long;
-    using HashProduct = std::unordered_map<PartitionIndex, EquivalenceClasses>;
+    using HashProduct = boost::unordered_flat_map<PartitionIndex, SortedPartition::EquivalenceClasses>;
 
 private:
     EquivalenceClasses sorted_partition_;
-    std::unordered_map<model::TupleIndex, PartitionIndex> hash_partition_;
+    boost::unordered_flat_map<model::TupleIndex, PartitionIndex> hash_partition_;
     unsigned long num_rows_ = 0;
 
     void BuildHashTable();
