@@ -6,6 +6,7 @@
 #include <utility>
 
 #include <easylogging++.h>
+#include <boost/sort/sort.hpp>
 
 #include "config/names_and_descriptions.h"
 #include "config/tabular_data/input_table/option.h"
@@ -81,7 +82,11 @@ void Order::CreateSingletonSortedPartitions() {
             }
             return type->Compare(l.second, r.second) == model::CompareResult::kEqual;
         };
-        std::sort(indexed_byte_data.begin(), indexed_byte_data.end(), less);
+        if (threads_num_ == 1) {
+            boost::sort::flat_stable_sort(indexed_byte_data.begin(), indexed_byte_data.end(), less);
+        } else {
+            boost::sort::block_indirect_sort(indexed_byte_data.begin(), indexed_byte_data.end(), less, threads_num_);
+        }
         SortedPartition::EquivalenceClasses equivalence_classes;
         equivalence_classes.reserve(typed_relation_->GetNumRows());
         equivalence_classes.push_back({indexed_byte_data.front().first});
