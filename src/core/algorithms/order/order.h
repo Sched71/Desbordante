@@ -11,6 +11,7 @@
 #include "model/table/column_layout_typed_relation_data.h"
 #include "order_utility.h"
 #include "sorted_partitions.h"
+#include "config/thread_number/type.h"
 
 namespace algos::order {
 
@@ -29,6 +30,7 @@ private:
     OrderDependencies valid_;
     OrderDependencies merge_invalidated_;
     std::unique_ptr<ListLattice> lattice_;
+    config::ThreadNumType threads_num_ = 1;
 
     void RegisterOptions();
     void LoadDataInternal() override;
