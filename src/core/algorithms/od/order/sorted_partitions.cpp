@@ -19,15 +19,17 @@ void SortedPartition::BuildHashTable() {
     }
 }
 
-SortedPartition::HashProduct SortedPartition::BuildHashProduct(SortedPartition const& other) {
+SortedPartition::HashProduct SortedPartition::BuildHashProduct(
+        SortedPartition::EquivalenceClasses::const_iterator begin,
+        SortedPartition::EquivalenceClasses::const_iterator end) {
     HashProduct hash_product;
     hash_product.reserve(hash_partition_.size());
-    for (EquivalenceClass const& eq_class : other.sorted_partition_) {
-        if (other.sorted_partition_.size() <= 1) {
+    for (auto it = begin; it != end; ++it) {
+        if (end - begin <= 1) {
             break;
         }
         std::unordered_set<PartitionIndex> visited_positions;
-        for (model::TupleIndex tuple_index : eq_class) {
+        for (model::TupleIndex tuple_index : *it) {
             auto it = hash_partition_.find(tuple_index);
             if (it == hash_partition_.end()) {
                 continue;
@@ -49,7 +51,7 @@ SortedPartition::HashProduct SortedPartition::BuildHashProduct(SortedPartition c
 
 void SortedPartition::Intersect(SortedPartition const& other) {
     BuildHashTable();
-    HashProduct hash_product = BuildHashProduct(other);
+    HashProduct hash_product = BuildHashProduct(other.sorted_partition_.begin(), other.sorted_partition_.end());
     SortedPartition res(num_rows_);
     res.sorted_partition_.reserve(num_rows_);
     for (std::size_t i = 0; i < sorted_partition_.size(); ++i) {

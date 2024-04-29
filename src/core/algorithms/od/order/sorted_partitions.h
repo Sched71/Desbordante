@@ -21,7 +21,9 @@ private:
     unsigned long num_rows_ = 0;
 
     void BuildHashTable();
-    HashProduct BuildHashProduct(SortedPartition const& other);
+    SortedPartition::HashProduct BuildHashProduct(
+        SortedPartition::EquivalenceClasses::const_iterator begin,
+        SortedPartition::EquivalenceClasses::const_iterator end);
 
 public:
     SortedPartition() = default;
