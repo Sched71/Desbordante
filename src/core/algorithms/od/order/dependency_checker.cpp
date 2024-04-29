@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <unordered_set>
 
+#include <boost/thread.hpp>
+
 #include "model/table/tuple_index.h"
 
 namespace algos::order {
@@ -31,6 +33,7 @@ ValidityType CheckForSwap(SortedPartition const& l, SortedPartition const& r) {
     SortedPartition::EquivalenceClasses const& l_classes = l.GetEqClasses();
     SortedPartition::EquivalenceClasses const& r_classes = r.GetEqClasses();
     while (l_i < l_classes.size() && r_i < r_classes.size()) {
+        boost::this_thread::interruption_point();
         if (next_l) {
             l_eq_class = l_classes[l_i];
         }
@@ -54,6 +57,49 @@ ValidityType CheckForSwap(SortedPartition const& l, SortedPartition const& r) {
                 next_r = true;
                 if (l_eq_class.empty()) {
                     ++l_i;
+                    next_l = true;
+                } else {
+                    next_l = false;
+                }
+            }
+        }
+    }
+    return res;
+}
+
+ValidityType CheckForSwapReverse(SortedPartition const& l, SortedPartition const& r) {
+    ValidityType res = ValidityType::valid;
+    bool next_l = true, next_r = true;
+    SortedPartition::EquivalenceClass l_eq_class;
+    SortedPartition::EquivalenceClass r_eq_class;
+    SortedPartition::EquivalenceClasses const& l_classes = l.GetEqClasses();
+    SortedPartition::EquivalenceClasses const& r_classes = r.GetEqClasses();
+    long int l_i = l_classes.size() - 1, r_i = r_classes.size() - 1;
+    while (l_i >= 0 && r_i >= 0) {
+        boost::this_thread::interruption_point();
+        if (next_l) {
+            l_eq_class = l_classes[l_i];
+        }
+        if (next_r) {
+            r_eq_class = r_classes[r_i];
+        }
+        if (l_eq_class.size() < r_eq_class.size()) {
+            if (!SubsetSetDifference(l_eq_class, r_eq_class)) {
+                return ValidityType::swap;
+            } else {
+                res = ValidityType::merge;
+                --l_i;
+                next_l = true;
+                next_r = false;
+            }
+        } else {
+            if (!SubsetSetDifference(r_eq_class, l_eq_class)) {
+                return ValidityType::swap;
+            } else {
+                --r_i;
+                next_r = true;
+                if (l_eq_class.empty()) {
+                    --l_i;
                     next_l = true;
                 } else {
                     next_l = false;

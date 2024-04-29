@@ -5,6 +5,7 @@
 #include <memory>
 #include <utility>
 
+#include <boost/thread.hpp>
 #include <easylogging++.h>
 
 #include "config/names_and_descriptions.h"
@@ -28,6 +29,7 @@ void Order::RegisterOptions() {
     using config::Option;
 
     RegisterOption(config::kTableOpt(&input_table_));
+    RegisterOption(config::kThreadNumberOpt(&threads_num_));
 }
 
 void Order::LoadDataInternal() {
@@ -131,7 +133,27 @@ ValidityType Order::CheckCandidateValidity(AttributeList const& lhs, AttributeLi
             candidate_sets_[lhs].erase(rhs);
         } else {
             CreateSortedPartitionsFromSingletons(rhs);
-            candidate_validity = CheckForSwap(sorted_partitions_[lhs], sorted_partitions_[rhs]);
+            if (threads_num_ > 2) {
+                boost::packaged_task<ValidityType> forward_check([this, lhs, rhs] {
+                    return CheckForSwap(sorted_partitions_[lhs], sorted_partitions_[rhs]);
+                });
+                boost::packaged_task<ValidityType> reverse_check([this, lhs, rhs] {
+                    return CheckForSwapReverse(sorted_partitions_[lhs], sorted_partitions_[rhs]);
+                });
+                auto f1 = forward_check.get_future().share();
+                auto f2 = reverse_check.get_future().share();
+                boost::thread th1(std::move(forward_check));
+                boost::thread th2(std::move(reverse_check));
+                if (boost::wait_for_any(f1, f2) == 0) {
+                    candidate_validity = f1.get();
+                    th2.interrupt();
+                } else {
+                    candidate_validity = f2.get();
+                    th1.interrupt();
+                }
+            } else {
+                candidate_validity = CheckForSwap(sorted_partitions_[lhs], sorted_partitions_[rhs]);
+            }
         }
     }
     return candidate_validity;
