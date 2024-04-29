@@ -9,28 +9,30 @@
 namespace algos::order {
 
 void SortedPartition::BuildHashTable() {
-    hash_partition.reserve(num_rows);
-    for (PartitionIndex i = 0; i < sorted_partition.size(); ++i) {
-        if (sorted_partition[i].size() == 1) {
+    hash_partition_.reserve(num_rows_);
+    for (PartitionIndex i = 0; i < sorted_partition_.size(); ++i) {
+        if (sorted_partition_[i].size() == 1) {
             continue;
         }
-        for (model::TupleIndex tuple_index : sorted_partition[i]) {
-            hash_partition.emplace(tuple_index, i);
+        for (model::TupleIndex tuple_index : sorted_partition_[i]) {
+            hash_partition_.emplace(tuple_index, i);
         }
     }
 }
 
-SortedPartition::HashProduct SortedPartition::BuildHashProduct(SortedPartition const& other) {
+SortedPartition::HashProduct SortedPartition::BuildHashProduct(
+        SortedPartition::EquivalenceClasses::const_iterator begin,
+        SortedPartition::EquivalenceClasses::const_iterator end) {
     HashProduct hash_product;
-    hash_product.reserve(hash_partition.size());
-    for (EquivalenceClass const& eq_class : other.sorted_partition) {
-        if (other.sorted_partition.size() <= 1) {
+    hash_product.reserve(hash_partition_.size());
+    for (auto it = begin; it != end; ++it) {
+        if (end - begin <= 1) {
             break;
         }
         std::unordered_set<PartitionIndex> visited_positions;
-        for (model::TupleIndex tuple_index : eq_class) {
-            auto it = hash_partition.find(tuple_index);
-            if (it == hash_partition.end()) {
+        for (model::TupleIndex tuple_index : *it) {
+            auto it = hash_partition_.find(tuple_index);
+            if (it == hash_partition_.end()) {
                 continue;
             }
             PartitionIndex position = it->second;
@@ -50,21 +52,21 @@ SortedPartition::HashProduct SortedPartition::BuildHashProduct(SortedPartition c
 
 void SortedPartition::Intersect(SortedPartition const& other) {
     BuildHashTable();
-    HashProduct hash_product = BuildHashProduct(other);
-    SortedPartition res(num_rows);
-    res.sorted_partition.reserve(num_rows);
-    for (std::size_t i = 0; i < sorted_partition.size(); ++i) {
-        if (EquivalenceClass const& eq_class = sorted_partition[i]; eq_class.size() == 1) {
-            res.sorted_partition.push_back(eq_class);
+    HashProduct hash_product = BuildHashProduct(other.sorted_partition_.begin(), other.sorted_partition_.end());
+    SortedPartition res(num_rows_);
+    res.sorted_partition_.reserve(num_rows_);
+    for (std::size_t i = 0; i < sorted_partition_.size(); ++i) {
+        if (EquivalenceClass const& eq_class = sorted_partition_[i]; eq_class.size() == 1) {
+            res.sorted_partition_.push_back(eq_class);
         } else {
             for (EquivalenceClass& eq_class : hash_product[i]) {
                 if (!eq_class.empty()) {
-                    res.sorted_partition.push_back(std::move(eq_class));
+                    res.sorted_partition_.push_back(std::move(eq_class));
                 }
             }
         }
     }
-    res.sorted_partition.shrink_to_fit();
+    res.sorted_partition_.shrink_to_fit();
     *this = std::move(res);
 }
 
