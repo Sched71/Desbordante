@@ -3,10 +3,11 @@
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
-#include <thread>
 
 #include "algorithms/algorithm.h"
 #include "config/tabular_data/input_table_type.h"
+#include "config/thread_number/option.h"
+#include "config/thread_number/type.h"
 #include "dependency_checker.h"
 #include "list_lattice.h"
 #include "model/table/column_layout_typed_relation_data.h"
@@ -31,7 +32,7 @@ private:
     OrderDependencies valid_;
     OrderDependencies merge_invalidated_;
     std::unique_ptr<ListLattice> lattice_;
-    config::ThreadNumType threads_num_ = std::thread::hardware_concurrency();
+    config::ThreadNumType threads_num_ = 1;
 
     void RegisterOptions();
     void LoadDataInternal() override;

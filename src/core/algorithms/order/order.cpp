@@ -5,11 +5,14 @@
 #include <memory>
 #include <utility>
 
-#include <easylogging++.h>
 #include <boost/sort/sort.hpp>
+#include <boost/thread.hpp>
+#include <easylogging++.h>
 
 #include "config/names_and_descriptions.h"
 #include "config/tabular_data/input_table/option.h"
+#include "config/thread_number/option.h"
+#include "config/thread_number/type.h"
 #include "dependency_checker.h"
 #include "list_lattice.h"
 #include "model/types/types.h"
@@ -28,6 +31,7 @@ void Order::RegisterOptions() {
     using config::Option;
 
     RegisterOption(config::TableOpt(&input_table_));
+    RegisterOption(config::ThreadNumberOpt(&threads_num_));
 }
 
 void Order::LoadDataInternal() {
