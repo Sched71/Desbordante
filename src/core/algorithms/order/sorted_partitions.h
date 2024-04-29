@@ -19,26 +19,28 @@ public:
     using HashProduct = boost::unordered_flat_map<PartitionIndex, SortedPartition::EquivalenceClasses>;
 
 private:
-    EquivalenceClasses sorted_partition;
-    boost::unordered_flat_map<model::TupleIndex, PartitionIndex> hash_partition;
-    unsigned long num_rows = 0;
+    EquivalenceClasses sorted_partition_;
+    boost::unordered_flat_map<model::TupleIndex, PartitionIndex> hash_partition_;
+    unsigned long num_rows_ = 0;
 
     void BuildHashTable();
-    HashProduct BuildHashProduct(SortedPartition const& other);
+    SortedPartition::HashProduct BuildHashProduct(
+        SortedPartition::EquivalenceClasses::const_iterator begin,
+        SortedPartition::EquivalenceClasses::const_iterator end);
 
 public:
     SortedPartition() = default;
-    explicit SortedPartition(unsigned long num_rows) noexcept : num_rows(num_rows){};
+    explicit SortedPartition(unsigned long num_rows) noexcept : num_rows_(num_rows){};
     SortedPartition(EquivalenceClasses&& eq_classes, unsigned long num_rows)
-        : sorted_partition(std::move(eq_classes)), num_rows(num_rows){};
+        : sorted_partition_(std::move(eq_classes)), num_rows_(num_rows){};
     void Intersect(SortedPartition const& other);
 
     EquivalenceClasses const& GetEqClasses() const {
-        return sorted_partition;
+        return sorted_partition_;
     }
 
     std::size_t Size() const {
-        return sorted_partition.size();
+        return sorted_partition_.size();
     }
 };
 
