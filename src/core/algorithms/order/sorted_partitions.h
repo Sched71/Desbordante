@@ -7,6 +7,11 @@
 #include <boost/unordered/unordered_flat_set.hpp>
 #include <boost/unordered/unordered_flat_map.hpp>
 
+#include <boost/unordered/unordered_flat_set.hpp>
+#include <boost/unordered/unordered_flat_map.hpp>
+
+#include "config/thread_number/option.h"
+#include "config/thread_number/type.h"
 #include "model/table/tuple_index.h"
 
 namespace algos::order {
@@ -24,9 +29,6 @@ private:
     unsigned long num_rows_ = 0;
 
     void BuildHashTable();
-    SortedPartition::HashProduct BuildHashProduct(
-        SortedPartition::EquivalenceClasses::const_iterator begin,
-        SortedPartition::EquivalenceClasses::const_iterator end);
 
 public:
     SortedPartition() = default;
@@ -34,6 +36,11 @@ public:
     SortedPartition(EquivalenceClasses&& eq_classes, unsigned long num_rows)
         : sorted_partition_(std::move(eq_classes)), num_rows_(num_rows){};
     void Intersect(SortedPartition const& other);
+    void IntersectParallel(SortedPartition const& other, config::ThreadNumType thread_num);
+
+    SortedPartition::HashProduct BuildHashProduct(
+            SortedPartition::EquivalenceClasses::const_iterator begin,
+            SortedPartition::EquivalenceClasses::const_iterator end);
 
     EquivalenceClasses const& GetEqClasses() const {
         return sorted_partition_;

@@ -133,7 +133,11 @@ void Order::CreateSortedPartitionsFromSingletons(AttributeList const& attr_list)
     }
     SortedPartition res = sorted_partitions_.at({attr_list[0]});
     for (size_t i = 1; i < attr_list.size(); ++i) {
-        res.Intersect(sorted_partitions_.at({attr_list[i]}));
+        if (threads_num_ > 1) {
+            res.IntersectParallel(sorted_partitions_.at({attr_list[i]}), threads_num_);
+        } else {
+            res.Intersect(sorted_partitions_.at({attr_list[i]}));
+        }
     }
     sorted_partitions_.emplace(attr_list, res);
 }
