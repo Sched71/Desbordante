@@ -32,7 +32,7 @@ private:
     OrderDependencies valid_;
     OrderDependencies merge_invalidated_;
     std::unique_ptr<ListLattice> lattice_;
-    config::ThreadNumType threads_num_ = 1;
+    config::ThreadNumType threads_num_ = 8;
 
     void RegisterOptions();
     void LoadDataInternal() override;
