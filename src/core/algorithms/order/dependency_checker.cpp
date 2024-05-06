@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <unordered_set>
+#include <iostream>
 
 #include <boost/thread.hpp>
 
@@ -33,7 +34,11 @@ ValidityType CheckForSwap(SortedPartition const& l, SortedPartition const& r) {
     SortedPartition::EquivalenceClasses const& l_classes = l.GetEqClasses();
     SortedPartition::EquivalenceClasses const& r_classes = r.GetEqClasses();
     while (l_i < l_classes.size() && r_i < r_classes.size()) {
-        boost::this_thread::interruption_point();
+        try {
+            boost::this_thread::interruption_point();
+        } catch (boost::thread_interrupted&) {
+            return res;
+        }
         if (next_l) {
             l_eq_class = l_classes[l_i];
         }
@@ -76,7 +81,11 @@ ValidityType CheckForSwapReverse(SortedPartition const& l, SortedPartition const
     SortedPartition::EquivalenceClasses const& r_classes = r.GetEqClasses();
     long int l_i = l_classes.size() - 1, r_i = r_classes.size() - 1;
     while (l_i >= 0 && r_i >= 0) {
+        try {
         boost::this_thread::interruption_point();
+        } catch (boost::thread_interrupted&) {
+            return res;
+        }
         if (next_l) {
             l_eq_class = l_classes[l_i];
         }
