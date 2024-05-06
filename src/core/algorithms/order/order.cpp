@@ -396,6 +396,7 @@ unsigned long long Order::ExecuteInternal() {
     PrintValidOD();
     auto elapsed_milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now() - start_time);
+    std::this_thread::sleep_for(std::chrono::milliseconds(3000));
     LOG(DEBUG) << "ms: " << elapsed_milliseconds.count() << '\n';
     return elapsed_milliseconds.count();
 }
